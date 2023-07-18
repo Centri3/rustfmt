@@ -254,10 +254,16 @@ impl ChainItemKind {
                     ChainItemKind::Parent {
                         expr: expr.clone(),
                         parens: is_method_call_receiver
-                            && matches!(
+                            && (matches!(
                                 &expr.kind,
                                 ast::ExprKind::Lit(lit) if crate::expr::lit_ends_in_dot(lit)
-                            ),
+                            ) || matches!(
+                                &expr.kind,
+                                ast::ExprKind::Closure(ref cl) if matches!(
+                                    cl.body.kind,
+                                    ast::ExprKind::Range(None, None, ast::RangeLimits::HalfOpen),
+                                )
+                            )),
                     },
                     expr.span,
                 );
